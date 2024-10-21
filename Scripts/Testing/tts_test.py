@@ -39,7 +39,7 @@ MALE_VOICES = [
 ]
 
 
-VOICE = MALE_VOICES[2]
+VOICE = FEMALE_VOICES[1]
 OUTPUT = 'Moutput.mp3'
 
 async def main() -> None:
