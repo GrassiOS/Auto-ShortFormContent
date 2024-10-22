@@ -215,6 +215,7 @@ import random
 import asyncio
 import edge_tts
 import requests
+from uploadYT import upload_video
 from moviepy.editor import VideoFileClip, AudioFileClip, CompositeVideoClip, ImageClip
 from pydub import AudioSegment
 from PIL import Image, ImageFont, ImageDraw
@@ -263,6 +264,31 @@ def extract_random_video_clip(video_file_path, duration):
     start_time = random.uniform(0, max_start_time)
     print(f'Selected random start time: {start_time}, Duration: {duration}')
     return video.subclip(start_time, start_time + duration)
+
+# CROSS PLATFORM UPLOAD
+
+def upload_to_tiktok(video_file_path, access_token, title):
+    # Endpoint for TikTok upload (You must get permission for uploading from TikTok)
+    upload_url = "https://open-api.tiktok.com/video/upload/"
+    
+    # Open the video file in binary mode
+    with open(video_file_path, 'rb') as video_file:
+        files = {
+            'video': video_file
+        }
+        data = {
+            'access_token': access_token,
+            'title': title
+        }
+        
+        # Send the video file and title to TikTok
+        response = requests.post(upload_url, files=files, data=data)
+    
+    if response.status_code == 200:
+        print(f"Uploaded to TikTok: {title}")
+    else:
+        print(f"Failed to upload to TikTok: {response.text}")
+
 
 # Crop video to vertical format
 def crop_to_vertical(video_clip):
@@ -443,7 +469,10 @@ async def bulk_create_videos():
         burn_subtitles(output_video, srt_file_path)
 
         title = extract_title_from_script(script_path)
+
+        # Upload the video to YT    
         print(f'Title for video {i + 1}: {title}')
+        upload_video(output_video, title, description='#Shorts', tags=[], privacy_status='public')
 
         print(f'Video {i + 1} completed!')
         print('-------------------')
